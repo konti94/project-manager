@@ -26,3 +26,17 @@ code {
 	align-self: center;
 	width: fit-content;
 }
+
+.required-field-text {
+	font-size: 12px;
+}
+
+._3uApM {
+	padding: 0 16px;
+}
+
+._3uApM a {
+	text-decoration: none;
+	font-weight: bold;
+	padding: 12px 24px;
+}
