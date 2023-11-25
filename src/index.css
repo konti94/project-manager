@@ -27,7 +27,8 @@ code {
 	width: fit-content;
 }
 
-.required-field-text {
+.required-field-text,
+.explanation {
 	font-size: 12px;
 }
 

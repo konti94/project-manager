@@ -1,9 +1,16 @@
-import { ReactNode } from 'react';
+import { ReactNode, useRef } from 'react';
 import StepProgressBar from 'react-step-progress';
 
 import 'react-step-progress/dist/index.css';
 
 function AddNewProject(props: any): JSX.Element {
+	const projectNameRef = useRef<HTMLInputElement>(null);
+	const projectNameErrorRef = useRef<HTMLDivElement>(null);
+	const projectDescriptionRef = useRef<HTMLTextAreaElement>(null);
+	const workersListRef = useRef<HTMLUListElement>(null);
+
+	let projectNameValue: string = '';
+
 	const createStep1Content = (): ReactNode => {
 		return (
 			<div className='container mt-5 pt-4 px-0'>
@@ -20,8 +27,15 @@ function AddNewProject(props: any): JSX.Element {
 							id='projectName'
 							className='form-control'
 							placeholder='Példa projekt'
+							ref={projectNameRef}
+							onKeyUp={handleProjectNameKeyUp}
+							maxLength={255}
 							required
 						/>
+						<div
+							id='projectNameErrorMessage'
+							className='invalid-feedback d-none'
+							ref={projectNameErrorRef}></div>
 					</div>
 					<div className='mb-3 w-50'>
 						<label
@@ -34,7 +48,13 @@ function AddNewProject(props: any): JSX.Element {
 							className='form-control'
 							placeholder='Példa leírás'
 							cols={30}
-							rows={6}></textarea>
+							rows={6}
+							ref={projectDescriptionRef}
+							minLength={50}
+							maxLength={500}></textarea>
+						<span className='mt-2 explanation'>
+							Minimum 50, maximum 500 karakter
+						</span>
 					</div>
 					<div className='w-50'>
 						<label htmlFor='formFile' className='form-label'>
@@ -61,46 +81,41 @@ function AddNewProject(props: any): JSX.Element {
 		return (
 			<div className='container mt-5 pt-4 px-0'>
 				<form className='mb-4'>
-					<ul className='p-0 list-unstyled'>
-						<li className='mb-4 p-4 border rounded'>
-							<div className='mb-4 fs-3'>
-								<span>1. </span>
-								dolgozó
+					<ul className='p-0 list-unstyled' ref={workersListRef}>
+						<li className='d-flex align-items-center justify-content-between gap-4 mb-4 p-4 border rounded'>
+							<div className='w-50'>
+								<label
+									htmlFor='projectCoWorkerName1'
+									className='form-label'>
+									Dolgozó neve:
+								</label>
+								<input
+									type='text'
+									id='projectCoWorkerName1'
+									className='form-control'
+									placeholder='Példa Béla'
+								/>
 							</div>
-							<div className='d-flex align-items-center justify-content-between gap-4'>
-								<div className='w-50'>
-									<label
-										htmlFor='projectCoWorkerName1'
-										className='form-label'>
-										Dolgozó neve:
-									</label>
-									<input
-										type='text'
-										id='projectCoWorkerName1'
-										className='form-control'
-										placeholder='Példa Béla'
-									/>
-								</div>
-								<div className='w-50'>
-									<label
-										htmlFor='projectCoWorkerPosition1'
-										className='form-label'>
-										Dolgozó pozíciója:
-									</label>
-									<input
-										type='text'
-										id='projectCoWorkerPosition1'
-										className='form-control'
-										placeholder='Példa pozíció'
-									/>
-								</div>
+							<div className='w-50'>
+								<label
+									htmlFor='projectCoWorkerPosition1'
+									className='form-label'>
+									Dolgozó pozíciója:
+								</label>
+								<input
+									type='text'
+									id='projectCoWorkerPosition1'
+									className='form-control'
+									placeholder='Példa pozíció'
+								/>
 							</div>
 						</li>
 					</ul>
 					<button
 						type='button'
 						id='addNewCoWorker'
-						className='btn btn-primary py-2 px-4'>
+						className='btn btn-primary py-2 px-4'
+						onClick={handleAddNewWorker}>
 						Új hozzáadása
 					</button>
 				</form>
@@ -159,15 +174,19 @@ function AddNewProject(props: any): JSX.Element {
 		);
 	};
 
+	const handleProjectNameKeyUp = () => {
+		projectNameValue = projectNameRef.current?.value || '';
+	};
+
+	const handleAddNewWorker = () => {};
+
 	const step1Validator = (): boolean => {
-		return true;
-	};
-
-	const step2Validator = (): boolean => {
-		return true;
-	};
-
-	const step3Validator = (): boolean => {
+		if (projectNameValue === '') {
+			projectNameRef.current?.classList.add('is-invalid');
+			projectNameErrorRef.current?.classList.remove('d-none');
+			projectNameErrorRef.current?.append('Ez a mező kötelező');
+			return false;
+		}
 		return true;
 	};
 
@@ -189,13 +208,11 @@ function AddNewProject(props: any): JSX.Element {
 						label: 'Dolgozók',
 						name: 'step 2',
 						content: createStep2Content(),
-						validator: step2Validator,
 					},
 					{
 						label: 'Csatolmányok (linkek)',
 						name: 'step 3',
 						content: createStep3Content(),
-						validator: step3Validator,
 					},
 				]}
 				previousBtnName='Előző'
