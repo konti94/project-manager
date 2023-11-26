@@ -1,10 +1,11 @@
 import { useEffect } from 'react';
+import { Link } from 'react-router-dom';
 
 function ListProjects(props: any): JSX.Element {
 	const { projects, setProjects } = props;
 
 	useEffect(() => {
-		const fetchProjects = async () => {
+		(async () => {
 			try {
 				const response = await fetch('projects.json');
 				const data = await response.json();
@@ -12,9 +13,7 @@ function ListProjects(props: any): JSX.Element {
 			} catch (error) {
 				console.error(error);
 			}
-		};
-
-		fetchProjects();
+		})();
 	}, [projects]);
 
 	return (
@@ -25,9 +24,11 @@ function ListProjects(props: any): JSX.Element {
 					<div className='card-body d-flex flex-column pb-4'>
 						<h2 className='card-title mb-3'>{project.title}</h2>
 						<p className='card-text mb-5'>{project.description}</p>
-						<button className='btn btn-primary'>
-							Show details
-						</button>
+						<Link
+							to={'/project/' + project.id}
+							className='btn btn-primary'>
+							Részletek
+						</Link>
 					</div>
 				</div>
 			))}

@@ -1,4 +1,4 @@
-import { ReactNode, useRef, useState } from 'react';
+import { ReactNode, useRef } from 'react';
 import StepProgressBar from 'react-step-progress';
 
 import 'react-step-progress/dist/index.css';
@@ -283,7 +283,7 @@ function AddNewProject(props: any): JSX.Element {
 	};
 
 	const onFormSubmit = (): void => {
-		const postProject = async () => {
+		(async () => {
 			try {
 				const response = await fetch('projects.json', {
 					method: 'POST',
@@ -303,9 +303,7 @@ function AddNewProject(props: any): JSX.Element {
 			} catch (error) {
 				console.error(error);
 			}
-		};
-
-		postProject();
+		})();
 	};
 
 	return (
