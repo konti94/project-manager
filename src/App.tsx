@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom';
 import ListProjects from './components/ListProjects';
 import AddNewProject from './components/AddNewProject';
+import ProjectSinglePage from './components/ProjectSinglePage';
 
 function App() {
 	const [projects, setProjects] = useState([]);
@@ -41,6 +42,9 @@ function App() {
 							setProjects={setProjects}
 						/>
 					}></Route>
+				<Route
+					path='/project/:projectId'
+					element={<ProjectSinglePage />}></Route>
 				<Route
 					path='/new-project'
 					element={<AddNewProject projects={projects} />}></Route>
