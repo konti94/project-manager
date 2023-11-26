@@ -1,4 +1,5 @@
 import { ReactNode, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import StepProgressBar from 'react-step-progress';
 
 import 'react-step-progress/dist/index.css';
@@ -13,6 +14,8 @@ function AddNewProject(props: any): JSX.Element {
 	const projectAttachmentLabelRef = useRef<HTMLInputElement>(null);
 	const projectAttachmentUrlRef = useRef<HTMLInputElement>(null);
 	const addNewAttachmentToastRef = useRef<HTMLInputElement>(null);
+
+	const navigate = useNavigate();
 
 	let projectNameValue: string = '';
 	let projectDescriptionValue: string = '';
@@ -285,7 +288,7 @@ function AddNewProject(props: any): JSX.Element {
 	const onFormSubmit = (): void => {
 		(async () => {
 			try {
-				const response = await fetch('projects.json', {
+				const response = await fetch('/projects.json', {
 					method: 'POST',
 					headers: {
 						'Content-Type': 'application/json',
@@ -299,7 +302,7 @@ function AddNewProject(props: any): JSX.Element {
 					}),
 				});
 				const result = await response.json();
-				console.log(result);
+				navigate('/');
 			} catch (error) {
 				console.error(error);
 			}
