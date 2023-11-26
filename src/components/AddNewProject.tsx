@@ -1,4 +1,4 @@
-import { ReactNode, useRef } from 'react';
+import { ReactNode, useRef, useState } from 'react';
 import StepProgressBar from 'react-step-progress';
 
 import 'react-step-progress/dist/index.css';
@@ -7,9 +7,19 @@ function AddNewProject(props: any): JSX.Element {
 	const projectNameRef = useRef<HTMLInputElement>(null);
 	const projectNameErrorRef = useRef<HTMLDivElement>(null);
 	const projectDescriptionRef = useRef<HTMLTextAreaElement>(null);
-	const workersListRef = useRef<HTMLUListElement>(null);
+	const projectCoWorkerNameRef = useRef<HTMLInputElement>(null);
+	const projectCoWorkerPositionRef = useRef<HTMLInputElement>(null);
+	const addNewWorkerToastRef = useRef<HTMLInputElement>(null);
+	const projectAttachmentLabelRef = useRef<HTMLInputElement>(null);
+	const projectAttachmentUrlRef = useRef<HTMLInputElement>(null);
+	const addNewAttachmentToastRef = useRef<HTMLInputElement>(null);
 
 	let projectNameValue: string = '';
+	let projectDescriptionValue: string = '';
+	let workersList: object[] = [];
+	let workerCounter: number = 1;
+	let attachmentsList: object[] = [];
+	let attachmentCounter: number = 1;
 
 	const createStep1Content = (): ReactNode => {
 		return (
@@ -51,20 +61,11 @@ function AddNewProject(props: any): JSX.Element {
 							rows={6}
 							ref={projectDescriptionRef}
 							minLength={50}
-							maxLength={500}></textarea>
+							maxLength={500}
+							onChange={handleProjectDescriptionKeyUp}></textarea>
 						<span className='mt-2 explanation'>
 							Minimum 50, maximum 500 karakter
 						</span>
-					</div>
-					<div className='w-50'>
-						<label htmlFor='formFile' className='form-label'>
-							Projekthez tartozó kép:
-						</label>
-						<input
-							id='projectPicture'
-							className='form-control'
-							type='file'
-						/>
 					</div>
 				</form>
 				<p className='d-flex align-items-center'>
@@ -79,98 +80,146 @@ function AddNewProject(props: any): JSX.Element {
 
 	const createStep2Content = (): ReactNode => {
 		return (
-			<div className='container mt-5 pt-4 px-0'>
-				<form className='mb-4'>
-					<ul className='p-0 list-unstyled' ref={workersListRef}>
-						<li className='d-flex align-items-center justify-content-between gap-4 mb-4 p-4 border rounded'>
+			<>
+				<div className='container mt-5 pt-4 px-0'>
+					<form className='mb-4'>
+						<div className='d-flex align-items-center justify-content-between gap-4 mb-4'>
 							<div className='w-50'>
 								<label
-									htmlFor='projectCoWorkerName1'
+									htmlFor='projectCoWorkerName'
 									className='form-label'>
 									Dolgozó neve:
 								</label>
 								<input
 									type='text'
-									id='projectCoWorkerName1'
+									id='projectCoWorkerName'
 									className='form-control'
 									placeholder='Példa Béla'
+									ref={projectCoWorkerNameRef}
+									defaultValue={''}
 								/>
 							</div>
 							<div className='w-50'>
 								<label
-									htmlFor='projectCoWorkerPosition1'
+									htmlFor='projectCoWorkerPosition'
 									className='form-label'>
 									Dolgozó pozíciója:
 								</label>
 								<input
 									type='text'
-									id='projectCoWorkerPosition1'
+									id='projectCoWorkerPosition'
 									className='form-control'
 									placeholder='Példa pozíció'
+									ref={projectCoWorkerPositionRef}
+									defaultValue={''}
 								/>
 							</div>
-						</li>
-					</ul>
-					<button
-						type='button'
-						id='addNewCoWorker'
-						className='btn btn-primary py-2 px-4'
-						onClick={handleAddNewWorker}>
-						Új hozzáadása
-					</button>
-				</form>
-			</div>
+						</div>
+						<button
+							type='button'
+							id='addNewCoWorker'
+							className='btn btn-primary py-2 px-4'
+							onClick={handleAddNewWorker}>
+							Hozzáadás
+						</button>
+					</form>
+					{/* <ul className='p-0 list-unstyled'>
+						{workersList.map((worker: any, i: number) => (
+							<li
+								className='d-flex align-items-center justify-content-between gap-4 mb-4'
+								key={i}>
+								<span>{worker.id}</span>
+								<span>{worker.name}</span>
+								<span>{worker.position}</span>
+							</li>
+						))}
+					</ul> */}
+				</div>
+				<div className='toast-container position-fixed bottom-0 end-0 p-3'>
+					<div
+						className='toast align-items-center text-bg-success border-0'
+						role='alert'
+						aria-live='assertive'
+						aria-atomic='true'
+						ref={addNewWorkerToastRef}>
+						<div className='d-flex'>
+							<div className='toast-body'>Sikeres hozzáadás</div>
+							<button
+								type='button'
+								className='btn-close btn-close-white me-2 m-auto'
+								data-bs-dismiss='toast'
+								aria-label='Close'></button>
+						</div>
+					</div>
+				</div>
+			</>
 		);
 	};
 
 	const createStep3Content = (): ReactNode => {
 		return (
-			<div className='container mt-5 pt-4 px-0'>
-				<form className='mb-4'>
-					<ul className='p-0 list-unstyled'>
-						<li className='mb-4 p-4 border rounded'>
-							<div className='mb-4 fs-3'>
-								<span>1. </span>
-								csatolmány
+			<>
+				<div className='container mt-5 pt-4 px-0'>
+					<form className='mb-4'>
+						<div className='d-flex align-items-center justify-content-between gap-4 mb-4'>
+							<div className='w-50'>
+								<label
+									htmlFor='projectAttachmentLabel'
+									className='form-label'>
+									Csatolmány címke:
+								</label>
+								<input
+									type='text'
+									id='projectAttachmentLabel'
+									className='form-control'
+									placeholder='Példa címke'
+									ref={projectAttachmentLabelRef}
+									defaultValue={''}
+								/>
 							</div>
-							<div className='d-flex align-items-center justify-content-between gap-4'>
-								<div className='w-50'>
-									<label
-										htmlFor='projectAttachmentLabel1'
-										className='form-label'>
-										Csatolmány címke:
-									</label>
-									<input
-										type='text'
-										id='projectAttachmentLabel1'
-										className='form-control'
-										placeholder='Példa címke'
-									/>
-								</div>
-								<div className='w-50'>
-									<label
-										htmlFor='projectAttachmentUrl1'
-										className='form-label'>
-										Csatolmány url:
-									</label>
-									<input
-										type='text'
-										id='projectAttachmentUrl1'
-										className='form-control'
-										placeholder='https://www.example.com'
-									/>
-								</div>
+							<div className='w-50'>
+								<label
+									htmlFor='projectAttachmentUrl'
+									className='form-label'>
+									Csatolmány url:
+								</label>
+								<input
+									type='text'
+									id='projectAttachmentUrl'
+									className='form-control'
+									placeholder='https://www.example.com'
+									ref={projectAttachmentUrlRef}
+									defaultValue={''}
+								/>
 							</div>
-						</li>
-					</ul>
-					<button
-						type='button'
-						id='addNewCoWorker'
-						className='btn btn-primary py-2 px-4'>
-						Új hozzáadása
-					</button>
-				</form>
-			</div>
+						</div>
+						<button
+							type='button'
+							id='addNewAttachment'
+							className='btn btn-primary py-2 px-4'
+							onClick={handleAddNewAttachment}>
+							Hozzáadás
+						</button>
+					</form>
+				</div>
+				<div className='toast-container position-fixed bottom-0 end-0 p-3'>
+					<div
+						className='toast align-items-center text-bg-success border-0'
+						role='alert'
+						aria-live='assertive'
+						aria-atomic='true'
+						ref={addNewAttachmentToastRef}>
+						<div className='d-flex'>
+							<div className='toast-body'>Sikeres hozzáadás</div>
+							<button
+								type='button'
+								className='btn-close btn-close-white me-2 m-auto'
+								data-bs-dismiss='toast'
+								aria-label='Close'></button>
+						</div>
+					</div>
+				</div>
+			</>
 		);
 	};
 
@@ -178,7 +227,50 @@ function AddNewProject(props: any): JSX.Element {
 		projectNameValue = projectNameRef.current?.value || '';
 	};
 
-	const handleAddNewWorker = () => {};
+	const handleProjectDescriptionKeyUp = () => {
+		projectDescriptionValue = projectDescriptionRef.current?.value || '';
+	};
+
+	const handleAddNewWorker = () => {
+		const workerName: string = projectCoWorkerNameRef.current?.value || '';
+		const workerPosition: string =
+			projectCoWorkerPositionRef.current?.value || '';
+
+		workersList.push({
+			id: workerCounter,
+			name: workerName,
+			position: workerPosition,
+		});
+
+		addNewWorkerToastRef.current?.classList.add('show');
+
+		setTimeout(() => {
+			addNewWorkerToastRef.current?.classList.remove('show');
+		}, 5000);
+
+		workerCounter += 1;
+	};
+
+	const handleAddNewAttachment = () => {
+		const attachmentLabel: string =
+			projectAttachmentLabelRef.current?.value || '';
+		const attachmentUrl: string =
+			projectAttachmentUrlRef.current?.value || '';
+
+		attachmentsList.push({
+			id: attachmentCounter,
+			label: attachmentLabel,
+			url: attachmentUrl,
+		});
+
+		addNewAttachmentToastRef.current?.classList.add('show');
+
+		setTimeout(() => {
+			addNewAttachmentToastRef.current?.classList.remove('show');
+		}, 5000);
+
+		attachmentCounter += 1;
+	};
 
 	const step1Validator = (): boolean => {
 		if (projectNameValue === '') {
@@ -190,7 +282,31 @@ function AddNewProject(props: any): JSX.Element {
 		return true;
 	};
 
-	function onFormSubmit(): void {}
+	const onFormSubmit = (): void => {
+		const postProject = async () => {
+			try {
+				const response = await fetch('projects.json', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify({
+						id: props.projects.length + 1,
+						title: projectNameValue,
+						description: projectDescriptionValue,
+						workers: workersList,
+						attachments: attachmentsList,
+					}),
+				});
+				const result = await response.json();
+				console.log(result);
+			} catch (error) {
+				console.error(error);
+			}
+		};
+
+		postProject();
+	};
 
 	return (
 		<div className='container-lg py-5'>

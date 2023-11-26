@@ -43,9 +43,7 @@ function App() {
 					}></Route>
 				<Route
 					path='/new-project'
-					element={
-						<AddNewProject setProjects={setProjects} />
-					}></Route>
+					element={<AddNewProject projects={projects} />}></Route>
 			</Routes>
 		</BrowserRouter>
 	);
